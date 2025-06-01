@@ -37,6 +37,9 @@ class DateExtractor:
         #     r'(\d{1,2})-(\d{1,2})-(\d{4})',     # DD-MM-YYYY
         # ]
 
+        return None
+    
+    
     @staticmethod
     def _get_next_weekday(date: datetime, weekday: int) -> datetime:
         """Get the next occurrence of a specific weekday"""
