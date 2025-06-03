@@ -30,12 +30,28 @@ class DateExtractor:
             if re.search(pattern, text):
                 return date_obj.strftime('%Y-%m-%d')
             
-        # # Handle specific date formats
-        # date_regex_patterns = [
-        #     r'(\d{1,2})/(\d{1,2})/(\d{4})',     # MM/DD/YYYY
-        #     r'(\d{4})-(\d{1,2})-(\d{1,2})',     # YYYY-MM-DD
-        #     r'(\d{1,2})-(\d{1,2})-(\d{4})',     # DD-MM-YYYY
-        # ]
+        # Handle specific date formats
+        date_regex_patterns = [
+            r'(\d{1,2})/(\d{1,2})/(\d{4})',     # MM/DD/YYYY
+            r'(\d{4})-(\d{1,2})-(\d{1,2})',     # YYYY-MM-DD
+            r'(\d{1,2})-(\d{1,2})-(\d{4})',     # DD-MM-YYYY
+        ]
+
+        for pattern in date_regex_patterns:
+            match = re.search(pattern, text)
+            if match:
+                try:
+                    if pattern == r'(\d{4})-(\d{1,2})-(\d{1,2})':
+                        year, month, day = match.groups()
+                    elif pattern == r'(\d{1,2})/(\d{1,2})/(\d{4})':
+                        month, day, year = match.groups()
+                    else:  # DD-MM-YYYY
+                        day, month, year = match.groups()
+                    
+                    date_obj = datetime(int(year), int(month), int(day))
+                    return date_obj.strftime('%Y-%m-%d')
+                except ValueError:
+                    continue
 
         return None
     
