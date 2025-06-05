@@ -5,20 +5,23 @@ from pydantic import ValidationError
 
 from ..models.user_info import UserInfo
 from ..utils.date_extractor import DateExtractor
+from config.logging import logger
 
 import textwrap
 
 
 class AppointmentBookingTool(BaseTool):
     """Tool for booking appointments with conversational form"""
-    name = "appointment_booking"
-    description = "Book appointments by collecting user information through conversation"
+    name: str = "appointment_booking"
+    description: str = "Book appointments by collecting user information through conversation"
 
     def _run(self, query: str) -> str:
         """Execute the appointment booking process"""
+
+        # logger.debug("→ booking_state at start of _run:", st.session_state.get('booking_state'))
         try:
             # Initialize the session state for form data if it does not exist
-            if 'booking' not in st.session_state:
+            if 'booking_state' not in st.session_state:
                 st.session_state.booking_state = {
                     'step': 'name',
                     'data': {},
@@ -53,7 +56,7 @@ class AppointmentBookingTool(BaseTool):
             # Minimal UserInfo obj for placeholder
             test_data = {
                 'name': 'Test User',
-                'phone': '+1234567890',
+                'phone': '+442083661177',
                 'email': 'test@example.com'
             }
             test_data[field_name] = value
@@ -63,23 +66,32 @@ class AppointmentBookingTool(BaseTool):
             cleaned_value = getattr(user_info, field_name)
 
             return True, cleaned_value, ""
-        
+
         except ValidationError as e:
             for error in e.errors():
-                if error['loc'][0] == field_name:
-                    return False, value, error['msg']
-            
-            return False, value, "Invalid Input"
+                logger.debug(f"→ ValidationError: {error}")
+                # Return the first validation error regardless of field
+                return False, value, error['msg']
+            return False, value, "Validation failed"
+
 
     def _handle_field(self, field_name: str, user_input: str, next_step: str, prompt: str) -> str:
             """Helper function to handle field and clean input"""
 
             state = st.session_state.booking_state
+
+            # DEBUG: See what we are going to validate
+            logger.debug(f"→ _handle_field called with field_name={field_name!r}, user_input={user_input!r}, step={state['step']!r}")
+
+
             is_valid, cleaned_value, error_msg = self._validate_field(field_name, user_input)
+            logger.debug(f"-> is_valid value: {is_valid}, cleaned_value: {cleaned_value}, error_msg: {error_msg}")
 
             if is_valid:
+                
                 state['data'][field_name] = cleaned_value
                 state['step'] = next_step
+                logger.debug(f"→ setting data[{field_name!r}]={cleaned_value!r}, advancing step to {next_step!r}")
                 return f"Thank you, {cleaned_value}! {prompt}" if field_name == 'name' else prompt
             
             return f"Please provide a valid {field_name}. {error_msg}" 
@@ -178,6 +190,7 @@ class AppointmentBookingTool(BaseTool):
     def is_booking_active(self) -> bool:
         """Check if booking process is currently active"""
         return (hasattr(st.session_state, 'booking_state') and st.session_state.booking_state.get('active', False))
+    
     
     def reset_booking(self) -> None:
         """Reset the booking state"""
