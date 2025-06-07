@@ -13,7 +13,7 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.agents import initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import HumanMessage, SystemMessage
-from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
+from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate, PromptTemplate
 
 
 from config.settings import settings
@@ -107,12 +107,6 @@ class ChatbotSystem:
                 HumanMessagePromptTemplate.from_template("Context:\n{context}\n\nQuestion: {question}")
                 ])
 
-            # combine_docs_chain = create_stuff_documents_chain(llm=self.llm, prompt=chat_prompt)
-            # self.qa_chain = RetrievalQA(
-            #     retriever=vector_store.as_retriever(search_kwargs={"k": 3}),
-            #     combine_documents_chain=combine_docs_chain,
-            #     return_source_documents=True
-            # )
 
             def format_docs(docs):
                 return "\n\n".join(doc.page_content for doc in docs)
@@ -165,6 +159,39 @@ class ChatbotSystem:
             For questions about uploaded documents, use the document_qa tool.
             Always be polite and helpful."""
         
+        # prompt_template = """
+        #     You are a helpful AI assistant that can:
+        #     1. Answer questions from uploaded documents
+        #     2. Help users book appointments by collecting their information
+        #     3. Have general conversations
+            
+        #     When a user asks to "call them", "book appointment", or mentions scheduling, use the appointment_booking tool.
+        #     For questions about uploaded documents, use the document_qa tool.
+        #     Always be polite and helpful.
+            
+        #     You have access to the following tools:
+            
+        #     {tools}
+            
+        #     Use the following format:
+            
+        #     Question: the input question you must answer
+        #     Thought: you should always think about what to do
+        #     Action: the action to take, should be one of [{tool_names}]
+        #     Action Input: the input to the action
+        #     Observation: the result of the action
+        #     ... (this Thought/Action/Action Input/Observation can repeat N times)
+        #     Thought: I now know the final answer
+        #     Final Answer: the final answer to the original input question
+            
+        #     Begin!
+            
+        #     Question: {input}
+        #     Thought: {agent_scratchpad}
+        #     """
+
+        prompt = PromptTemplate.from_template(system_prompt)
+        
         if tools:
             try:
                 self.agent = initialize_agent(
@@ -173,6 +200,7 @@ class ChatbotSystem:
                     agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
                     memory=self.memory,
                     verbose=True,
+                    prompt=prompt,
                     handle_parsing_errors=True
                 )
                 return True
@@ -202,7 +230,7 @@ class ChatbotSystem:
             # Handle agent-based interactions for document QA and general queries
             elif self.agent:
                 try:
-                    response = self.agent.run(user_input)
+                    response = self.agent.invoke(user_input)
                     return response
                 except Exception as agent_error:
                     # Fallback to direct LLM if agent fails
