@@ -197,10 +197,23 @@ class StreamlitUI:
                         except Exception as e:
                             response = f"I encountered an error: {str(e)}. Please try again."
 
-                    st.markdown(response)
+                    # cleaned_response = response['output'] if isinstance(response, dict) and 'output' in response else str(response)
+                    
+                    if isinstance(response, dict):
+                        if 'output' in response:
+                            cleaned_response = response['output']
+                        elif 'result' in response:
+                            cleaned_response = response['result']
+                        else:
+                            cleaned_response = str(response)
+                    elif response == "Agent stopped due to iteration limit or time limit.":
+                        cleaned_response = "I apologize, but I'm having trouble finding a comprehensive answer to your question in the uploaded documents. The information might not be available in the current documents, or it might be phrased differently. Could you try rephrasing your question or asking about a more specific aspect?"
+                    else:
+                        cleaned_response = str(response)
+                    st.markdown(cleaned_response)
 
                     # Add assistant response to history
-                    st.session_state.messages.append({"role": "assistant", "content": response})
+                    st.session_state.messages.append({"role": "assistant", "content": cleaned_response})
 
 
     def render_sidebar(self) -> None:
