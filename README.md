@@ -21,6 +21,9 @@ This is a Streamlit-based chatbot that can:
 * ChromaDB for storing vectorized document chunks
 * Groq LLM (Mixtral) for responses
 
+## Demo Video
+
+[Demo Video](https://youtu.be/ByB1nshOgAs)
 
 ## Setup Instructions
 
