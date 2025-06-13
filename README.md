@@ -27,8 +27,8 @@ This is a Streamlit-based chatbot that can:
 1. Clone the repository
 
 ```bash
-git clone https://github.com/bishal4965/chatbot-agent-app.git
-cd chatbot-agent-app
+git clone https://github.com/bishal4965/RAG-Chatbot-with-Langchain.git
+cd RAG-Chatbot-with-Langchain
 ```
 
 2. Install dependencies
@@ -48,7 +48,7 @@ LOG_LEVEL=DEBUG
 4. Run the app
 
 ```bash
-streamlit run app/main.py
+streamlit run main.py
 ```
 
 ## How It Works
