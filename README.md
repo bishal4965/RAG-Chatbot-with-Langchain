@@ -1,4 +1,4 @@
-# RAG Chatbot with Appointment Booking
+# RAG Chatbot using Langchain with Appointment Booking Feature
 
 This is a Streamlit-based chatbot that can:
 
