@@ -18,12 +18,12 @@ class DateExtractor:
             r'tomorrow': today + timedelta(days=1),
             r'next mon(?:day)?': DateExtractor._get_next_weekday(today, 0),
             # Use r'next mon(?:day)?' for matching 'next mon' as well as 'next monday' pattern
-            r'next tue(?:sday)': DateExtractor._get_next_weekday(today, 1),
-            r'next wed(?:nesday)': DateExtractor._get_next_weekday(today, 2),
-            r'next thu(?:rsday)': DateExtractor._get_next_weekday(today, 3),
-            r'next fri(?:day)': DateExtractor._get_next_weekday(today, 4),
-            r'next sat(?:urday)': DateExtractor._get_next_weekday(today, 5),
-            r'next sun(?:day)': DateExtractor._get_next_weekday(today, 6),
+            r'next tue(?:sday)?': DateExtractor._get_next_weekday(today, 1),
+            r'next wed(?:nesday)?': DateExtractor._get_next_weekday(today, 2),
+            r'next thu(?:rsday)?': DateExtractor._get_next_weekday(today, 3),
+            r'next fri(?:day)?': DateExtractor._get_next_weekday(today, 4),
+            r'next sat(?:urday)?': DateExtractor._get_next_weekday(today, 5),
+            r'next sun(?:day)?': DateExtractor._get_next_weekday(today, 6),
         }
 
         for pattern, date_obj in date_patterns.items():

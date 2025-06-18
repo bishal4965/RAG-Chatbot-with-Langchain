@@ -18,7 +18,6 @@ class AppointmentBookingTool(BaseTool):
     def _run(self, query: str) -> str:
         """Execute the appointment booking process"""
 
-        # logger.debug("→ booking_state at start of _run:", st.session_state.get('booking_state'))
         try:
             # Initialize the session state for form data if it does not exist
             if 'booking_state' not in st.session_state:

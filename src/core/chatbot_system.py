@@ -1,23 +1,18 @@
-import os
 import streamlit as st
-from typing import List, Any, Optional
+from typing import List, Any
 import torch
 
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-# from langchain.chains import RetrievalQA
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-# from langchain.chains.combine_documents import create_stuff_documents_chain
-# from langchain.agents import initialize_agent, AgentType
 from langchain.agents import create_react_agent, AgentExecutor
 from langchain import hub
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate, PromptTemplate
-
 
 from config.settings import settings
 from ..tools.appointment_booking import AppointmentBookingTool
@@ -29,8 +24,6 @@ torch.set_num_threads(1)
 class ChatbotSystem:
     """Main chatbot system class"""
     
-    # DOCUMENT_QA_ERROR_MSG = "I apologize, but I'm having trouble finding a comprehensive answer to your question in the uploaded documents. The information might not be available in the current documents, or it might be phrased differently. Could you try rephrasing your question or asking about a more specific aspect?"
-
     def __init__(self):
         self.llm = None
         self.qa_chain = None
@@ -103,7 +96,6 @@ class ChatbotSystem:
                 documents=splits,
                 embedding=embeddings,
                 persist_directory=settings.CHROMA_DB_PATH,
-                # collection_metadata={"hnsw:space": "cosine"}
             )
 
             chat_prompt = ChatPromptTemplate.from_messages([
@@ -159,7 +151,6 @@ class ChatbotSystem:
             return False
 
         try:
-            # Create a more specific prompt that clearly defines when to use each tool
             prompt_template = (
                 "Previous conversation history:\n"
                 "{chat_history}\n\n"
@@ -228,19 +219,15 @@ class ChatbotSystem:
             
             # Handle agent-based interactions for document QA and general queries
             elif self.agent:
-                try:
-                    # agent_response = self.agent.invoke({"input": user_input})
-                    # Get the full conversation history
-                    # history = self.memory.load_memory_variables({})["chat_history"]
-                    
+                try:                    
                     # Pass both current input and conversation history to the agent
                     agent_response = self.agent.invoke({
                         "input": user_input,
                         # "chat_history": history
                     })
                     response = agent_response.get('output', str(agent_response))
-                    print(f"Agent response: {response}")
-                    # return response
+                    # print(f"Agent response: {response}")
+
                 except Exception as agent_error:
                     # Fallback to direct LLM if agent fail
                     print(f"Agent encountered an issue: {str(agent_error)}\n Using direct LLM response...")

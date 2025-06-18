@@ -1,9 +1,8 @@
 import os
 import streamlit as st
-from typing import Any, Dict, List, Optional
+from typing import Any, List
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 
-from config.settings import settings
 from ..core.chatbot_system import ChatbotSystem
 
 
@@ -21,7 +20,6 @@ class StreamlitUI:
             page_title="AI Chatbot with Document Q&A",
             page_icon="🤖",
             layout="wide",
-            # initial_sidebar_state="expanded"
         )
 
         # Simple custom CSS styling
@@ -39,44 +37,10 @@ class StreamlitUI:
                     </style>
                     """, unsafe_allow_html=True)
         
-        # Custom CSS for better styling
-        # self._apply_custom_styles()
-        
         # Main title and description
         st.title("🤖 AI Chatbot Assistant")
         st.markdown("*Your intelligent assistant for document Q&A and appointment booking*")
         
-
-    def _apply_custom_styles(self) -> None:
-        """Apply custom CSS styles"""
-        st.markdown("""
-        <style>
-        .main-header {
-            padding: 1rem 0;
-            border-bottom: 2px solid #f0f2f6;
-        }
-        .feature-card {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 0.5rem 0;
-        }
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .status-active { background-color: #28a745; }
-        .status-inactive { background-color: #dc3545; }
-        .chat-message {
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-radius: 0.5rem;
-        }
-        </style>
-        """, unsafe_allow_html=True)
 
     def render_document_upload(self) -> bool:
         """Render document upload section"""
@@ -248,14 +212,6 @@ class StreamlitUI:
                     st.success("Chat reset!")
                     st.rerun()
 
-                # if st.button("🧹 Clear All", use_container_width=True):
-                #     for key in list(st.session_state.keys()):
-                #         if key != 'chatbot':
-                #             del st.session_state[key]
-                #     if self.chatbot:
-                #         self.chatbot.reset_conversation()
-                #     st.success("All data cleared!")
-                #     st.rerun()
 
                 st.divider()
 

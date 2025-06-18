@@ -25,10 +25,8 @@ class DocumentQATool(BaseTool):
                 docs = self.qa_chain.retriever.get_relevant_documents(query)
                 print(f"Retrieved {len(docs)} relevant documents")
             
-            # result = self.qa_chain.invoke(query)
-            # return result
+            
             result = self.qa_chain.invoke(query)
-            # print(f"QA chain result: {result}") 
 
             # Extract the actual answer from the result
             if isinstance(result, dict):
